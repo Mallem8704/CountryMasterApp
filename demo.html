@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Country Master Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;margin:20px;background:#f5f6fb}
+    .container{max-width:1000px;margin:0 auto}
+    h1{color:#2c3e50}
+    .card{background:#fff;padding:16px;border-radius:8px;margin-bottom:16px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+    .flex{display:flex;gap:8px}
+    input,select{padding:8px;border:1px solid #ddd;border-radius:4px}
+    button{padding:8px 12px;border:none;border-radius:4px;background:#007bff;color:#fff;cursor:pointer}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+    .btn-edit{background:#ffc107;color:#000}
+    .btn-delete{background:#dc3545}
+    .error{color:#dc3545;margin-top:6px}
+    .success{color:#28a745;margin-top:6px}
+    .small{font-size:12px;color:#666}
+    .row{display:flex;gap:8px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Country Master Demo (Static)</h1>
+
+    <div class="card" id="country-card">
+      <h2>Countries</h2>
+      <div class="row">
+        <input id="name" placeholder="Country name (min 2)" />
+        <input id="capital" placeholder="Capital" />
+        <input id="population" type="number" placeholder="Population" />
+        <select id="continent">
+          <option value="">Continent</option>
+          <option>Asia</option>
+          <option>Africa</option>
+          <option>Europe</option>
+          <option>North America</option>
+          <option>South America</option>
+          <option>Oceania</option>
+        </select>
+        <button id="addBtn">Add</button>
+        <button id="updateBtn" style="display:none;background:#28a745">Update</button>
+        <button id="cancelBtn" style="display:none;background:#6c757d">Cancel</button>
+      </div>
+      <div id="cmsg" class="small"></div>
+      <table id="ctable">
+        <thead><tr><th>ID</th><th>Name</th><th>Capital</th><th>Population</th><th>Continent</th><th>Actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card" id="reg-card">
+      <h2>Registration</h2>
+      <div style="display:grid;gap:8px;max-width:480px">
+        <input id="rname" placeholder="Full name (min 3)" />
+        <input id="remail" placeholder="Email" />
+        <input id="rpassword" type="password" placeholder="Password (min 6)" />
+        <input id="rconfirm" type="password" placeholder="Confirm Password" />
+        <div>
+          <button id="registerBtn">Register</button>
+          <button id="rreset" style="background:#6c757d;margin-left:8px">Clear</button>
+        </div>
+        <div id="rmsg" class="small"></div>
+      </div>
+    </div>
+
+    <div class="small">Open this file in your browser to preview the UI: <strong>demo.html</strong></div>
+  </div>
+
+<script>
+  // Simple in-memory storage for demo (localStorage)
+  const STORAGE_KEY = 'demo_countries_v1';
+  let countries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  let editingId = null;
+
+  function id() { return Date.now(); }
+
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(countries)); }
+
+  function render(){
+    const tbody = document.querySelector('#ctable tbody');
+    tbody.innerHTML = '';
+    countries.forEach((c, i)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${c.id}</td><td>${c.name}</td><td>${c.capital}</td><td>${Number(c.population).toLocaleString()}</td><td>${c.continent}</td><td><button class='btn-edit' data-id='${c.id}'>Edit</button> <button class='btn-delete' data-id='${c.id}'>Delete</button></td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function resetForm(){
+    editingId = null;
+    document.getElementById('name').value='';
+    document.getElementById('capital').value='';
+    document.getElementById('population').value='';
+    document.getElementById('continent').value='';
+    document.getElementById('addBtn').style.display='inline-block';
+    document.getElementById('updateBtn').style.display='none';
+    document.getElementById('cancelBtn').style.display='none';
+    document.getElementById('cmsg').textContent='';
+  }
+
+  document.getElementById('addBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('name').value.trim();
+    const capital = document.getElementById('capital').value.trim();
+    const population = Number(document.getElementById('population').value);
+    const continent = document.getElementById('continent').value;
+    const msg = document.getElementById('cmsg');
+    if(!name || name.length<2){ msg.textContent='Country name required (min 2)'; msg.className='error'; return; }
+    if(!capital){ msg.textContent='Capital required'; msg.className='error'; return; }
+    if(!population || population<=0){ msg.textContent='Population must be a positive number'; msg.className='error'; return; }
+    const newCountry = { id: id(), name, capital, population, continent };
+    countries.push(newCountry); save(); render(); msg.textContent='Country added'; msg.className='success'; setTimeout(()=>msg.textContent='',2000); resetForm();
+  });
+
+  document.getElementById('ctable').addEventListener('click', (e)=>{
+    if(e.target.matches('.btn-delete')){
+      const idv = Number(e.target.dataset.id);
+      if(!confirm('Delete this country?')) return;
+      countries = countries.filter(c=>c.id!==idv); save(); render();
+      document.getElementById('cmsg').textContent='Country deleted'; document.getElementById('cmsg').className='success'; setTimeout(()=>document.getElementById('cmsg').textContent='',2000);
+    }
+    if(e.target.matches('.btn-edit')){
+      const idv = Number(e.target.dataset.id);
+      const c = countries.find(x=>x.id===idv);
+      if(!c) return;
+      editingId = idv;
+      document.getElementById('name').value=c.name;
+      document.getElementById('capital').value=c.capital;
+      document.getElementById('population').value=c.population;
+      document.getElementById('continent').value=c.continent;
+      document.getElementById('addBtn').style.display='none';
+      document.getElementById('updateBtn').style.display='inline-block';
+      document.getElementById('cancelBtn').style.display='inline-block';
+    }
+  });
+
+  document.getElementById('updateBtn').addEventListener('click', ()=>{
+    if(editingId===null) return;
+    const name = document.getElementById('name').value.trim();
+    const capital = document.getElementById('capital').value.trim();
+    const population = Number(document.getElementById('population').value);
+    const continent = document.getElementById('continent').value;
+    const msg = document.getElementById('cmsg');
+    if(!name || name.length<2){ msg.textContent='Country name required (min 2)'; msg.className='error'; return; }
+    const idx = countries.findIndex(c=>c.id===editingId);
+    if(idx===-1) return;
+    countries[idx] = { id: editingId, name, capital, population, continent };
+    save(); render(); msg.textContent='Country updated'; msg.className='success'; setTimeout(()=>msg.textContent='',2000); resetForm();
+  });
+
+  document.getElementById('cancelBtn').addEventListener('click', resetForm);
+
+  // Registration
+  document.getElementById('registerBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('rname').value.trim();
+    const email = document.getElementById('remail').value.trim();
+    const pass = document.getElementById('rpassword').value;
+    const conf = document.getElementById('rconfirm').value;
+    const msg = document.getElementById('rmsg'); msg.className='';
+    if(!name||name.length<3){ msg.textContent='Name required (min 3)'; msg.className='error'; return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent='Valid email required'; msg.className='error'; return; }
+    if(!pass||pass.length<6){ msg.textContent='Password min 6 chars'; msg.className='error'; return; }
+    if(!(/[a-zA-Z]/.test(pass) && /[0-9]/.test(pass) && /[^a-zA-Z0-9]/.test(pass))){ msg.textContent='Password must include letters, numbers and special chars'; msg.className='error'; return; }
+    if(pass!==conf){ msg.textContent='Passwords do not match'; msg.className='error'; return; }
+    msg.textContent='Registration successful!'; msg.className='success';
+    setTimeout(()=>{ document.getElementById('rname').value=''; document.getElementById('remail').value=''; document.getElementById('rpassword').value=''; document.getElementById('rconfirm').value=''; msg.textContent=''; },1500);
+  });
+
+  document.getElementById('rreset').addEventListener('click', ()=>{ document.getElementById('rname').value=''; document.getElementById('remail').value=''; document.getElementById('rpassword').value=''; document.getElementById('rconfirm').value=''; document.getElementById('rmsg').textContent=''; });
+
+  // Initialize with sample data if empty
+  if(countries.length===0){ countries = [ {id:1,name:'India',capital:'New Delhi',population:1393409038,continent:'Asia'}, {id:2,name:'USA',capital:'Washington D.C.',population:333287557,continent:'North America'}, {id:3,name:'France',capital:'Paris',population:67000000,continent:'Europe'} ]; save(); }
+  render();
+</script>
+</body>
+</html>

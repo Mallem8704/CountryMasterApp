@@ -59,6 +59,15 @@ CountryMasterApp/
 └── README.md
 ```
 
+## Quick Preview (no build required)
+
+If `npm install` or `ng` are not available on your machine, open `demo.html` in your browser for an immediate static demo of the UI (supports add/edit/delete and registration validation using localStorage).
+
+To open the demo:
+
+Windows Explorer -> double-click `demo.html`, or open it in the browser via `File -> Open`.
+
+
 ## Installation & Setup
 
 ### Prerequisites
