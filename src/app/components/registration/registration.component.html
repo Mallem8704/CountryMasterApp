@@ -1,0 +1,136 @@
+<!-- src/app/components/registration/registration.component.html -->
+<!-- Registration Form Component Template -->
+<!-- Includes form with validation and error messages -->
+
+<div class="registration-container">
+  <div class="registration-card">
+    <h1>User Registration</h1>
+    <p class="subtitle">Create your account to get started</p>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+
+    <!-- Registration Form -->
+    <form [formGroup]="submitted ? form : null" (ngSubmit)="onSubmit()" class="registration-form">
+      
+      <!-- Name Field -->
+      <div class="form-group">
+        <label for="name">Full Name <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="name" 
+          placeholder="Enter your full name (min 3 characters)"
+          [(ngModel)]="form.name"
+          name="name"
+          class="form-control"
+          [class.is-invalid]="hasError('name')"
+          required>
+        <div *ngIf="hasError('name')" class="error-message">
+          {{ getErrorMessage('name') }}
+        </div>
+        <small class="form-hint">Minimum 3 characters required</small>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email Address <span class="required">*</span></label>
+        <input 
+          type="email" 
+          id="email" 
+          placeholder="Enter your email address"
+          [(ngModel)]="form.email"
+          name="email"
+          class="form-control"
+          [class.is-invalid]="hasError('email')"
+          required>
+        <div *ngIf="hasError('email')" class="error-message">
+          {{ getErrorMessage('email') }}
+        </div>
+        <small class="form-hint">We'll never share your email</small>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password <span class="required">*</span></label>
+        <div class="password-input-group">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password" 
+            placeholder="Enter your password (min 6 characters)"
+            [(ngModel)]="form.password"
+            name="password"
+            class="form-control"
+            [class.is-invalid]="hasError('password')"
+            required>
+          <button 
+            type="button" 
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+            tabindex="-1">
+            {{ showPassword ? '👁️ Hide' : '👁️ Show' }}
+          </button>
+        </div>
+        <div *ngIf="hasError('password')" class="error-message">
+          {{ getErrorMessage('password') }}
+        </div>
+        <small class="form-hint">
+          At least 6 characters with letters, numbers, and special characters
+        </small>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+        <div class="password-input-group">
+          <input 
+            [type]="showConfirmPassword ? 'text' : 'password'" 
+            id="confirmPassword" 
+            placeholder="Confirm your password"
+            [(ngModel)]="form.confirmPassword"
+            name="confirmPassword"
+            class="form-control"
+            [class.is-invalid]="hasError('confirmPassword')"
+            required>
+          <button 
+            type="button" 
+            class="toggle-password"
+            (click)="toggleConfirmPasswordVisibility()"
+            tabindex="-1">
+            {{ showConfirmPassword ? '👁️ Hide' : '👁️ Show' }}
+          </button>
+        </div>
+        <div *ngIf="hasError('confirmPassword')" class="error-message">
+          {{ getErrorMessage('confirmPassword') }}
+        </div>
+      </div>
+
+      <!-- Form Buttons -->
+      <div class="form-buttons">
+        <button type="submit" class="btn btn-register">
+          Register
+        </button>
+        <button type="button" (click)="resetForm()" class="btn btn-reset">
+          Clear
+        </button>
+      </div>
+
+      <!-- Login Link -->
+      <p class="login-link">
+        Already have an account? <a href="#login">Sign in here</a>
+      </p>
+    </form>
+
+    <!-- Password Requirements Info -->
+    <div class="password-requirements">
+      <h3>Password Requirements:</h3>
+      <ul>
+        <li>Minimum 6 characters</li>
+        <li>Contains at least one letter (A-Z, a-z)</li>
+        <li>Contains at least one number (0-9)</li>
+        <li>Contains at least one special character (!@#$%^&*)</li>
+      </ul>
+    </div>
+  </div>
+</div>

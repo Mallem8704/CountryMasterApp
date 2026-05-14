@@ -1,0 +1,40 @@
+<!-- src/app/app.component.html -->
+<!-- Root Component Template -->
+<!-- Navigation bar and component routing -->
+
+<div class="app-container">
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <h1>Country Master App</h1>
+    </div>
+    <nav class="navbar-menu">
+      <button 
+        class="nav-link"
+        [class.active]="currentComponent === 'country'"
+        (click)="switchComponent('country')">
+        Country Management
+      </button>
+      <button 
+        class="nav-link"
+        [class.active]="currentComponent === 'registration'"
+        (click)="switchComponent('registration')">
+        Registration
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Country Component -->
+    <app-country *ngIf="currentComponent === 'country'"></app-country>
+
+    <!-- Registration Component -->
+    <app-registration *ngIf="currentComponent === 'registration'"></app-registration>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 Country Master Management System. All rights reserved.</p>
+  </footer>
+</div>

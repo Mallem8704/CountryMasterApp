@@ -1,0 +1,154 @@
+<!-- src/app/components/country/country.component.html -->
+<!-- Country Management Component Template -->
+<!-- This template includes table for displaying countries, form for add/edit, and action buttons -->
+
+<div class="country-container">
+  <h1>Country Master Management</h1>
+
+  <!-- Success Message Alert -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <!-- Error Message Alert -->
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Add Country Button -->
+  <div class="button-group">
+    <button 
+      (click)="toggleForm()" 
+      [class.btn-close]="showForm"
+      class="btn btn-primary">
+      {{ showForm ? 'Close Form' : '+ Add New Country' }}
+    </button>
+  </div>
+
+  <!-- Add/Edit Form -->
+  <div *ngIf="showForm" class="form-container">
+    <h2>{{ isEditing ? 'Edit Country' : 'Add New Country' }}</h2>
+    
+    <form (ngSubmit)="isEditing ? updateCountry() : addCountry()">
+      <!-- Country Name Input -->
+      <div class="form-group">
+        <label for="countryName">Country Name <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="countryName" 
+          placeholder="Enter country name (min 2 characters)"
+          [(ngModel)]="countryForm.name"
+          name="name"
+          class="form-control"
+          required>
+      </div>
+
+      <!-- Capital Input -->
+      <div class="form-group">
+        <label for="capital">Capital <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="capital" 
+          placeholder="Enter capital city"
+          [(ngModel)]="countryForm.capital"
+          name="capital"
+          class="form-control"
+          required>
+      </div>
+
+      <!-- Population Input -->
+      <div class="form-group">
+        <label for="population">Population <span class="required">*</span></label>
+        <input 
+          type="number" 
+          id="population" 
+          placeholder="Enter population"
+          [(ngModel)]="countryForm.population"
+          name="population"
+          class="form-control"
+          required>
+      </div>
+
+      <!-- Continent Input -->
+      <div class="form-group">
+        <label for="continent">Continent</label>
+        <select 
+          id="continent"
+          [(ngModel)]="countryForm.continent"
+          name="continent"
+          class="form-control">
+          <option value="">Select Continent</option>
+          <option value="Asia">Asia</option>
+          <option value="Africa">Africa</option>
+          <option value="Europe">Europe</option>
+          <option value="North America">North America</option>
+          <option value="South America">South America</option>
+          <option value="Oceania">Oceania</option>
+          <option value="Antarctica">Antarctica</option>
+        </select>
+      </div>
+
+      <!-- Form Buttons -->
+      <div class="form-buttons">
+        <button 
+          type="submit" 
+          class="btn btn-success">
+          {{ isEditing ? 'Update Country' : 'Add Country' }}
+        </button>
+        <button 
+          type="button"
+          (click)="cancelEdit()"
+          class="btn btn-secondary">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Countries Table -->
+  <div class="table-container">
+    <h2>Countries List</h2>
+    
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Country Name</th>
+          <th>Capital</th>
+          <th>Population</th>
+          <th>Continent</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Display each country in the table using ngFor -->
+        <tr *ngFor="let country of countries">
+          <td>{{ country.id }}</td>
+          <td>{{ country.name }}</td>
+          <td>{{ country.capital }}</td>
+          <td>{{ country.population | number }}</td>
+          <td>{{ country.continent }}</td>
+          <td class="action-buttons">
+            <!-- Edit Button -->
+            <button 
+              (click)="editCountry(country)" 
+              class="btn btn-edit">
+              Edit
+            </button>
+            <!-- Delete Button -->
+            <button 
+              (click)="deleteCountry(country.id)" 
+              class="btn btn-delete">
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State Message -->
+    <div *ngIf="countries.length === 0" class="empty-state">
+      <p>No countries found. Click "Add New Country" to create one.</p>
+    </div>
+  </div>
+</div>
